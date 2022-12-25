@@ -1,0 +1,30 @@
+{
+  "name": "kakero",
+  "version": "1.0.0",
+  "description": "Crypto Betting Contract Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "test kakero"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khow38/kakero.git"
+  },
+  "keywords": [
+    "executor"
+  ],
+  "author": "Baku Satoshi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/khow38/kakero/issues"
+  },
+  "homepage": "https://github.com/khow38/kakero#readme",
+  "devDependencies": {
+    "@appliedblockchain/chainlink-plugins-fund-link": "^0.0.3",
+    "hardhat": "^2.12.4",
+    "hardhat-deploy": "^0.11.22"
+  },
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
+}
