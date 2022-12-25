@@ -24,10 +24,8 @@ Once you call `buildConnector`, it will return a connector function, which takes
 * **hostname** `string` (required)
 * **host** `string` (optional)
 * **protocol** `string` (required)
-* **port** `string` (required)
+* **port** `number` (required)
 * **servername** `string` (optional)
-* **localAddress** `string | null` (optional) Local address the socket should connect from.
-* **httpSocket** `Socket` (optional) Establish secure connection on a given socket rather than creating a new socket. It can only be sent on TLS update.
 
 ### Basic example
 
