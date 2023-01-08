@@ -15,7 +15,7 @@ module.exports = {
   networks: {
     goerli: {
       url: process.env.GOERLI_URL || "",
-      chainId: 4,
+      chainId: 5,
       accounts: [
         process.env.PRIVATE_KEY_DEPLOYER,
         process.env.PRIVATE_KEY_USER_2,

@@ -16,6 +16,9 @@ module.exports = async ({
   let vrfCoordinatorAddress;
   let additionalMessage = "";
 
+
+  log("chainID : " + chainId);
+
   if (chainId == 5) {
     linkToken = await get("LinkToken");
     VRFCoordinatorMock = await get("VRFCoordinatorMock");
