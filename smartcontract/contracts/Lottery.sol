@@ -36,7 +36,7 @@ contract LotteryGame is VRFConsumerBase {
         uint endDate;
     }
 
-    constructor(address vrfCoordinator, address link, bytes32 _keyhash, uint256 _fee) 
+    constructor(address vrfCoordinator, address link, bytes32 _keyhash, uint256 _fee)
     VRFConsumerBase(vrfCoordinator, link)
     {
         keyHash = _keyhash;
@@ -71,7 +71,7 @@ contract LotteryGame is VRFConsumerBase {
             playersCount[_lotteryId]++;
         }
         ppplayer[_lotteryId][msg.sender]++;
-        
+
         emit PrizeIncreased(lottery.lotteryId, lottery.prize);
     }
 
