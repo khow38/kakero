@@ -1,7 +1,7 @@
 import { Readable } from "stream";
 import { Blob } from 'buffer'
 
-export default BodyReadable
+export = BodyReadable
 
 declare class BodyReadable extends Readable {
   constructor(

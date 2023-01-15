@@ -7,7 +7,6 @@ module.exports = {
   find: require('./find'),
   reduce: require('./reduce'),
   collect: require('./collect'),
-  collectAsPromise: require('./collect-as-promise'),
   concat: require('./concat')
 }
 
