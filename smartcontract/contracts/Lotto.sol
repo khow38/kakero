@@ -2,27 +2,30 @@
 
 pragma solidity ^0.8.7;
 
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AutomationCompatibleInterface.sol";
 import "hardhat/console.sol";
 
 /* Errors */
-error Raffle__UpkeepNotNeeded(uint256 currentBalance, uint256 numPlayers, uint256 raffleState);
-error Raffle__TransferFailed();
-error Raffle__SendMoreToEnterRaffle();
-error Raffle__RaffleNotOpen();
+error Lotto__UpkeepNotNeeded(uint256 currentBalance, uint256 numPlayers, uint256 lottoState);
+error Lotto__TransferFailed();
+error Lotto__SendMoreToEnterLotto();
+error Lotto__LottoNotOpen();
 
-/**@title A sample Raffle Contract
+/**@title A sample Lotto Contract
  * @author Patrick Collins
- * @notice This contract is for creating a sample raffle contract
+ * @notice This contract is for creating a sample lotto contract
  * @dev This implements the Chainlink VRF Version 2
  */
-contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
+contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
     /* Type declarations */
-    enum RaffleState {
+    enum LottoState {
         OPEN,
-        CALCULATING
+        CALCULATING,
+        FINISHED
     }
     /* State variables */
     // Chainlink VRF Variables
@@ -39,11 +42,11 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     uint256 private s_lastTimeStamp;
     address private s_recentWinner;
     address payable[] private s_players;
-    RaffleState private s_raffleState;
+    LottoState private s_lottoState;
 
     /* Events */
-    event RequestedRaffleWinner(uint256 indexed requestId);
-    event RaffleEnter(address indexed player);
+    event RequestedLottoWinner(uint256 indexed requestId);
+    event LottoEnter(address indexed player);
     event WinnerPicked(address indexed player);
 
     /* Functions */
@@ -60,31 +63,31 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         i_interval = interval;
         i_subscriptionId = subscriptionId;
         i_entranceFee = entranceFee;
-        s_raffleState = RaffleState.OPEN;
+        s_lottoState = LottoState.OPEN;
         s_lastTimeStamp = block.timestamp;
         i_callbackGasLimit = callbackGasLimit;
     }
 
-    function enterRaffle() public payable {
+    function enterLotto() public payable {
         // require(msg.value >= i_entranceFee, "Not enough value sent");
-        // require(s_raffleState == RaffleState.OPEN, "Raffle is not open");
+        // require(s_lottoState == LottoState.OPEN, "Lotto is not open");
         if (msg.value < i_entranceFee) {
-            revert Raffle__SendMoreToEnterRaffle();
+            revert Lotto__SendMoreToEnterLotto();
         }
-        if (s_raffleState != RaffleState.OPEN) {
-            revert Raffle__RaffleNotOpen();
+        if (s_lottoState != LottoState.OPEN) {
+            revert Lotto__LottoNotOpen();
         }
         s_players.push(payable(msg.sender));
         // Emit an event when we update a dynamic array or mapping
         // Named events with the function name reversed
-        emit RaffleEnter(msg.sender);
+        emit LottoEnter(msg.sender);
     }
 
     /**
      * @dev This is the function that the Chainlink Keeper nodes call
      * they look for `upkeepNeeded` to return True.
      * the following should be true for this to return true:
-     * 1. The time interval has passed between raffle runs.
+     * 1. The time interval has passed between lotto runs.
      * 2. The lottery is open.
      * 3. The contract has ETH.
      * 4. Implicity, your subscription is funded with LINK.
@@ -100,7 +103,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
             bytes memory /* performData */
         )
     {
-        bool isOpen = RaffleState.OPEN == s_raffleState;
+        bool isOpen = LottoState.OPEN == s_lottoState;
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = s_players.length > 0;
         bool hasBalance = address(this).balance > 0;
@@ -118,13 +121,13 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         (bool upkeepNeeded, ) = checkUpkeep("");
         // require(upkeepNeeded, "Upkeep not needed");
         if (!upkeepNeeded) {
-            revert Raffle__UpkeepNotNeeded(
+            revert Lotto__UpkeepNotNeeded(
                 address(this).balance,
                 s_players.length,
-                uint256(s_raffleState)
+                uint256(s_lottoState)
             );
         }
-        s_raffleState = RaffleState.CALCULATING;
+        s_lottoState = LottoState.CALCULATING;
         uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -133,7 +136,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
             NUM_WORDS
         );
         // Quiz... is this redundant?
-        emit RequestedRaffleWinner(requestId);
+        emit RequestedLottoWinner(requestId);
     }
 
     /**
@@ -154,20 +157,20 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
         s_players = new address payable[](0);
-        s_raffleState = RaffleState.OPEN;
+        s_lottoState = LottoState.OPEN;
         s_lastTimeStamp = block.timestamp;
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         // require(success, "Transfer failed");
         if (!success) {
-            revert Raffle__TransferFailed();
+            revert Lotto__TransferFailed();
         }
         emit WinnerPicked(recentWinner);
     }
 
     /** Getter Functions */
 
-    function getRaffleState() public view returns (RaffleState) {
-        return s_raffleState;
+    function getLottoState() public view returns (LottoState) {
+        return s_lottoState;
     }
 
     function getNumWords() public pure returns (uint256) {

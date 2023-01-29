@@ -38,32 +38,32 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         subscriptionId,
         networkConfig[chainId]["gasLane"],
         networkConfig[chainId]["keepersUpdateInterval"],
-        networkConfig[chainId]["raffleEntranceFee"],
+        networkConfig[chainId]["lottoEntranceFee"],
         networkConfig[chainId]["callbackGasLimit"],
     ]
-    const raffle = await deploy("Raffle", {
+    const lotto = await deploy("Lotto", {
         from: deployer,
         args: arguments,
         log: true,
         waitConfirmations: waitBlockConfirmations,
     })
 
-    // Ensure the Raffle contract is a valid consumer of the VRFCoordinatorV2Mock contract.
+    // Ensure the Lotto contract is a valid consumer of the VRFCoordinatorV2Mock contract.
     if (developmentChains.includes(network.name)) {
         const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
-        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, raffle.address)
+        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, lotto.address)
     }
 
     // Verify the deployment
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log("Verifying...")
-        await verify(raffle.address, arguments)
+        await verify(lotto.address, arguments)
     }
 
     log("Enter lottery with command:")
     const networkName = network.name == "hardhat" ? "localhost" : network.name
-    log(`yarn hardhat run scripts/enterRaffle.js --network ${networkName}`)
+    log(`yarn hardhat run scripts/enterLotto.js --network ${networkName}`)
     log("----------------------------------------------------")
 }
 
-module.exports.tags = ["all", "raffle"]
+module.exports.tags = ["all", "lotto"]
