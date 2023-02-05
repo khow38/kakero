@@ -40,6 +40,7 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
     uint256 private immutable i_interval;
     uint256 private immutable i_entranceFee;
     uint256 private s_lastTimeStamp;
+    address private admin;
     address private s_recentWinner;
     address payable[] private s_players;
     LottoState private s_lottoState;
@@ -66,6 +67,7 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
         s_lottoState = LottoState.OPEN;
         s_lastTimeStamp = block.timestamp;
         i_callbackGasLimit = callbackGasLimit;
+        admin = msg.sender;
     }
 
     function enterLotto() public payable {
@@ -117,7 +119,7 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
      */
     function performUpkeep(
         bytes calldata /* performData */
-    ) external override {
+    ) external override onlyAdmin{
         (bool upkeepNeeded, ) = checkUpkeep("");
         // require(upkeepNeeded, "Upkeep not needed");
         if (!upkeepNeeded) {
@@ -137,6 +139,7 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
         );
         // Quiz... is this redundant?
         emit RequestedLottoWinner(requestId);
+        s_lottoState = LottoState.FINISHED;
     }
 
     /**
@@ -168,6 +171,15 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /** Getter Functions */
+
+    function getAdmin() public view returns (address) {
+        return admin;
+    }
+
+    function reopenGame() public onlyAdmin{
+        s_lottoState = LottoState.OPEN;
+        s_lastTimeStamp = block.timestamp;
+    }
 
     function getLottoState() public view returns (LottoState) {
         return s_lottoState;
@@ -203,5 +215,10 @@ contract Lotto is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     function getNumberOfPlayers() public view returns (uint256) {
         return s_players.length;
+    }
+
+    modifier onlyAdmin {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
     }
 }
