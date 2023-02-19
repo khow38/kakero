@@ -138,12 +138,10 @@ contract Betting {
      * they look for `readyToExecute` to return True.
      * the following should be true for this to return true:
      * 1. The time interval has passed between betting runs.
-     * 2. The lottery is open.
+     * 2. The Game is open.
      * 3. The contract has ETH.
      */
-    function checkExecuteReady(
-        bytes memory /* checkData */
-    )
+    function checkExecuteReady()
         public
         view
         returns (
@@ -166,7 +164,7 @@ contract Betting {
     function performExecute(
         uint16 oraclemsg
     ) external onlyAdmin{
-        (bool readyToExecute, ) = checkExecuteReady("");
+        (bool readyToExecute, ) = checkExecuteReady();
         // require(upkeepNeeded, "Upkeep not needed");
         if (!readyToExecute) {
             revert Betting__ExecuteNotNeeded(
