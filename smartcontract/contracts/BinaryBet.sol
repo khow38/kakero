@@ -204,7 +204,7 @@ contract Betting {
     }
 
     function checkPlayerExists(address player) public view returns (bool) {
-      uint256 l = players.length
+      uint256 l = players.length;
       for(uint256 i = 0; i < l; i++){
          if(players[i] == player) return true;
       }
