@@ -84,7 +84,11 @@ module.exports = {
     },
     contractSizer: {
         runOnCompile: false,
-        only: ["Lotto"],
+        only: ["Betting"],
+    },
+    optimizer : {
+        enabled : true,
+        runs : 200
     },
     namedAccounts: {
         deployer: {

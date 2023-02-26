@@ -27,10 +27,13 @@ contract Betting {
 
     // Betting Variables
     uint256 private immutable i_interval;
+    uint32 private immutable i_callbackGasLimit;
+
     uint256 private minimumBet;
     uint256 private totalBetOne;
     uint256 private totalBetTwo;
     uint256 private s_lastTimeStamp;
+
     address private admin;
     address payable[] private players;
     BettingState private s_bettingState;
@@ -49,12 +52,14 @@ contract Betting {
     /* Functions */
     constructor(
       uint256 interval,
-      uint256 entranceFee
+      uint256 entranceFee,
+      uint32 callbackGasLimit
     ) {
         i_interval = interval;
         minimumBet = entranceFee;         // 0.01 etherium
         s_bettingState = BettingState.OPEN;
         s_lastTimeStamp = block.timestamp;
+        i_callbackGasLimit = callbackGasLimit;
         admin = msg.sender;
     }
 
@@ -176,6 +181,7 @@ contract Betting {
         s_bettingState = BettingState.CALCULATING;
         // oracle engaged and redistribution of asset happens
         distributePrizes(oraclemsg);
+        players = new address payable[](0);
 
         s_bettingState = BettingState.FINISHED;
     }
@@ -198,7 +204,8 @@ contract Betting {
     }
 
     function checkPlayerExists(address player) public view returns (bool) {
-      for(uint256 i = 0; i < players.length; i++){
+      uint256 l = players.length
+      for(uint256 i = 0; i < l; i++){
          if(players[i] == player) return true;
       }
       return false;
