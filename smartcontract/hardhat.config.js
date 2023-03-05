@@ -80,6 +80,7 @@ module.exports = {
         currency: "USD",
         outputFile: "gas-report.txt",
         noColors: true,
+        gasPrice: 21
         // coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     },
     contractSizer: {

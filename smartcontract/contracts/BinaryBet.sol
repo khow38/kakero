@@ -2,12 +2,11 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "hardhat/console.sol";
 
 /* Errors */
-error Betting__ExecuteNotNeeded(uint256 currentBalance, uint256 numPlayers, uint256 bettingState);
+error Betting__ExecuteNotNeeded(uint256 currentBalance, uint256 numPlayers, bool gameFinished);
 error Betting__TransferFailed();
 error Betting__SendMoreToEnterBetting();
 error Betting__BettingNotOpen();
@@ -17,34 +16,27 @@ error Betting__BettingNotOpen();
  * * @notice This contract is for creating a sample betting contract
 */
 contract Betting {
-    /* Type declarations */
-    enum BettingState {
-        OPEN,
-        CALCULATING,
-        FINISHED
-    }
-    /* State variables */
 
     // Betting Variables
     uint256 private immutable i_interval;
-    uint32 private immutable i_callbackGasLimit;
 
     uint256 private minimumBet;
     uint256 private totalBetOne;
     uint256 private totalBetTwo;
     uint256 private s_lastTimeStamp;
 
+    address payable public owner;
     address private admin;
-    address payable[] private players;
-    BettingState private s_bettingState;
+    bool public gameFinished;
 
     struct Player {
         uint256 amountBet;
-        uint16  teamSelected;
+        uint16 teamSelected;
     }
     // Address of the player and => the user info
     mapping(address => Player) public playerInfo;
-
+    address payable[] public players;
+    address payable[] private winners;
 
     /* Events */
     event BettingEnter(address indexed player);
@@ -52,26 +44,22 @@ contract Betting {
     /* Functions */
     constructor(
       uint256 interval,
-      uint256 entranceFee,
-      uint32 callbackGasLimit
+      uint256 entranceFee
     ) {
         i_interval = interval;
         minimumBet = entranceFee;         // 0.01 etherium
-        s_bettingState = BettingState.OPEN;
+        gameFinished = false;
         s_lastTimeStamp = block.timestamp;
-        i_callbackGasLimit = callbackGasLimit;
         admin = msg.sender;
+        owner = payable(admin);
     }
 
     function betting(uint16 _teamSelected) public payable {
         //The first require is used to check if the player already exist
         require(!checkPlayerExists(msg.sender));
-
+        require(!gameFinished);
         if (msg.value < minimumBet) {
             revert Betting__SendMoreToEnterBetting();
-        }
-        if (s_bettingState != BettingState.OPEN) {
-            revert Betting__BettingNotOpen();
         }
         //We set the player informations : amount of the bet and selected team
         playerInfo[msg.sender].amountBet = msg.value;
@@ -90,9 +78,8 @@ contract Betting {
         emit BettingEnter(msg.sender);
     }
 
-    function distributePrizes(uint16 teamWinner) public {
-        address payable[] memory winners;
-        uint256 count = 0; // This is the count for the array of winners
+    function distributePrizes(uint16 teamWinner) internal onlyAdmin {
+
         uint256 LoserBet = 0; //This will take the value of all losers bet
         uint256 WinnerBet = 0; //This will take the value of all winners bet
         address add;
@@ -104,8 +91,7 @@ contract Betting {
             //If the player selected the winner team
             //We add his address to the winners array
             if(playerInfo[playerAddress].teamSelected == teamWinner){
-                winners[count] = playerAddress;
-                count++;
+                winners.push(playerAddress);
             }
         }
         //We define which bet sum is the Loser one and which one is the winner
@@ -118,19 +104,22 @@ contract Betting {
             WinnerBet = totalBetTwo;
         }
         //We loop through the array of winners, to give ethers to the winners
-        for(uint256 j = 0; j < count; j++){
-            // Check that the address in this fixed array is not empty
-            if(winners[j] != address(0)) {
-                add = winners[j];
-                bet = playerInfo[add].amountBet;
-                //Transfer the money to the user
-                winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000 );
-            }
+        for(uint256 j = 0; j < winners.length; j++){
+            add = winners[j];
+            bet = playerInfo[add].amountBet;
+            uint256 prize = (bet*(10000+(LoserBet*10000/WinnerBet)))/10000;
+            //Transfer the money to the user
+            payable(winners[j]).transfer(prize);
         }
+        owner.transfer(address(this).balance);
 
-        s_bettingState = BettingState.FINISHED;
-        delete playerInfo[playerAddress]; // Delete all the players
+        gameFinished = true;
+        // Delete all the players
+        for (uint256 i = 0; i < players.length; i++){
+            delete playerInfo[players[i]];
+        }
         delete players; // Delete all the players array
+        delete winners; // Delete all the winners array
         // players.length = 0; // Delete all the players array
         LoserBet = 0; //reinitialize the bets
         WinnerBet = 0;
@@ -154,7 +143,7 @@ contract Betting {
             bytes memory /* performData */
         )
     {
-        bool isOpen = BettingState.OPEN == s_bettingState;
+        bool isOpen = gameFinished == false;
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = players.length > 0;
         bool hasBalance = address(this).balance > 0;
@@ -175,15 +164,11 @@ contract Betting {
             revert Betting__ExecuteNotNeeded(
                 address(this).balance,
                 players.length,
-                uint256(s_bettingState)
+                gameFinished
             );
         }
-        s_bettingState = BettingState.CALCULATING;
         // oracle engaged and redistribution of asset happens
         distributePrizes(oraclemsg);
-        players = new address payable[](0);
-
-        s_bettingState = BettingState.FINISHED;
     }
 
 
@@ -194,13 +179,13 @@ contract Betting {
     }
 
     function reopenGame() public onlyAdmin{
-        s_bettingState = BettingState.OPEN;
+        gameFinished = false;
         players = new address payable [](0);
         s_lastTimeStamp = block.timestamp;
     }
 
-    function getBettingState() public view returns (BettingState) {
-        return s_bettingState;
+    function getGameFinished() public view returns (bool) {
+        return gameFinished;
     }
 
     function checkPlayerExists(address player) public view returns (bool) {
@@ -241,6 +226,11 @@ contract Betting {
 
     modifier onlyAdmin {
         require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner, "Only owner can call this function");
         _;
     }
 }
