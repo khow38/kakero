@@ -8,7 +8,6 @@ import "hardhat/console.sol";
 /* Errors */
 error Betting__ExecuteNotNeeded(uint256 currentBalance, uint256 numPlayers, bool gameFinished);
 error Betting__TransferFailed();
-error Betting__SendMoreToEnterBetting();
 error Betting__BettingNotOpen();
 
 /**@title A sample Betting Contract
@@ -38,6 +37,8 @@ contract Betting {
     address payable[] public players;
     address payable[] private winners;
 
+    uint private commission = 10;
+
     /* Events */
     event BettingEnter(address indexed player);
 
@@ -58,9 +59,7 @@ contract Betting {
         //The first require is used to check if the player already exist
         require(!checkPlayerExists(msg.sender));
         require(!gameFinished);
-        if (msg.value < minimumBet) {
-            revert Betting__SendMoreToEnterBetting();
-        }
+        require(msg.value >= minimumBet, "Insufficient bet amount");
         //We set the player informations : amount of the bet and selected team
         playerInfo[msg.sender].amountBet = msg.value;
         playerInfo[msg.sender].teamSelected = _teamSelected;
@@ -70,10 +69,10 @@ contract Betting {
 
         //at the end, we increment the stakes of the team selected with the player bet
         if ( _teamSelected == 1){
-            totalBetOne += msg.value;
+            totalBetOne += (msg.value * (100 - commission)/100);
         }
         else{
-            totalBetTwo += msg.value;
+            totalBetTwo += (msg.value * (100 - commission)/100);
         }
         emit BettingEnter(msg.sender);
     }
