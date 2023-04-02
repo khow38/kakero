@@ -18,7 +18,6 @@ contract Betting {
 
     // Betting Variables
     uint256 private immutable i_interval;
-
     uint256 private minimumBet;
     uint256 private totalBetOne;
     uint256 private totalBetTwo;
@@ -27,6 +26,9 @@ contract Betting {
     address payable public owner;
     address private admin;
     bool public gameFinished;
+
+    string public option1Name;
+    string public option2Name;
 
     struct Player {
         uint256 amountBet;
@@ -44,6 +46,8 @@ contract Betting {
 
     /* Functions */
     constructor(
+      string memory _option1Name,
+      string memory _option2Name,
       uint256 interval,
       uint256 entranceFee
     ) {
@@ -52,28 +56,42 @@ contract Betting {
         gameFinished = false;
         s_lastTimeStamp = block.timestamp;
         admin = msg.sender;
+        option1Name = _option1Name;
+        option2Name = _option2Name;
         owner = payable(admin);
     }
 
-    function betting(uint16 _teamSelected) public payable {
+    function betOnOption1() public payable {
         //The first require is used to check if the player already exist
         require(!checkPlayerExists(msg.sender));
         require(!gameFinished);
         require(msg.value >= minimumBet, "Insufficient bet amount");
         //We set the player informations : amount of the bet and selected team
         playerInfo[msg.sender].amountBet = msg.value;
-        playerInfo[msg.sender].teamSelected = _teamSelected;
+        playerInfo[msg.sender].teamSelected = 1;
 
         //then we add the address of the player to the players array
         players.push(payable(msg.sender));
 
         //at the end, we increment the stakes of the team selected with the player bet
-        if ( _teamSelected == 1){
-            totalBetOne += (msg.value * (100 - commission)/100);
-        }
-        else{
-            totalBetTwo += (msg.value * (100 - commission)/100);
-        }
+        totalBetOne += (msg.value * (100 - commission)/100);
+        emit BettingEnter(msg.sender);
+    }
+
+    function betOnOption2() public payable {
+        //The first require is used to check if the player already exist
+        require(!checkPlayerExists(msg.sender));
+        require(!gameFinished);
+        require(msg.value >= minimumBet, "Insufficient bet amount");
+        //We set the player informations : amount of the bet and selected team
+        playerInfo[msg.sender].amountBet = msg.value;
+        playerInfo[msg.sender].teamSelected = 2;
+
+        //then we add the address of the player to the players array
+        players.push(payable(msg.sender));
+
+        //at the end, we increment the stakes of the team selected with the player bet
+        totalBetTwo += (msg.value * (100 - commission)/100);
         emit BettingEnter(msg.sender);
     }
 
@@ -177,8 +195,10 @@ contract Betting {
         return admin;
     }
 
-    function reopenGame() public onlyAdmin{
+    function reopenGame(string memory _option1Name, string memory _option2Name) public onlyAdmin{
         gameFinished = false;
+        option1Name = _option1Name;
+        option2Name = _option2Name;
         players = new address payable [](0);
         s_lastTimeStamp = block.timestamp;
     }
@@ -199,8 +219,24 @@ contract Betting {
        return totalBetOne;
     }
 
+    function getOption1Name() public view returns(string memory){
+       return option1Name;
+    }
+
     function AmountTwo() public view returns(uint256){
        return totalBetTwo;
+    }
+
+    function getOption2Name() public view returns(string memory){
+       return option2Name;
+    }
+
+    function getNumberOfPlayers() public view returns (uint256) {
+        return players.length;
+    }
+
+    function getDueDate() public view returns (uint256) {
+        return s_lastTimeStamp;
     }
 
     function getPlayer(uint256 index) public view returns (address) {
@@ -211,16 +247,8 @@ contract Betting {
         return s_lastTimeStamp;
     }
 
-    function getInterval() public view returns (uint256) {
-        return i_interval;
-    }
-
     function getEntranceFee() public view returns (uint256) {
         return minimumBet;
-    }
-
-    function getNumberOfPlayers() public view returns (uint256) {
-        return players.length;
     }
 
     modifier onlyAdmin {

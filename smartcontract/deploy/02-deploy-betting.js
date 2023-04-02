@@ -20,6 +20,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     log("----------------------------------------------------")
     const arguments = [
+        networkConfig[chainId]["option1Name"],
+        networkConfig[chainId]["option2Name"],
         networkConfig[chainId]["keepersUpdateInterval"],
         networkConfig[chainId]["lottoEntranceFee"],
     ]
