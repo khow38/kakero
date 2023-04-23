@@ -23,7 +23,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         networkConfig[chainId]["gameDescription"],
         networkConfig[chainId]["option1Name"],
         networkConfig[chainId]["option2Name"],
-        networkConfig[chainId]["dueDateTimestamp"],
+        networkConfig[chainId]["matchDateTimestamp"],
         networkConfig[chainId]["lottoEntranceFee"],
     ]
     const betting = await deploy("Betting", {

@@ -21,7 +21,7 @@ contract Betting {
     uint256 private totalBetOne;
     uint256 private totalBetTwo;
     uint256 private startTimestamp;
-    uint256 private dueDateTimestamp;
+    uint256 private matchDateTimestamp;
 
     address payable public owner;
     address private admin;
@@ -31,6 +31,8 @@ contract Betting {
 
     string public option1Name;
     string public option2Name;
+    string public option1LeagueName;
+    string public option2LeagueName;
 
     struct Player {
         uint256 amountBet;
@@ -51,17 +53,21 @@ contract Betting {
       string memory _gameDescription,
       string memory _option1Name,
       string memory _option2Name,
-      uint256 _dueDateTimestamp,
+      string memory _option1LeagueName,
+      string memory _option2LeagueName,
+      uint256 _matchDateTimestamp,
       uint256 entranceFee
     ) {
         minimumBet = entranceFee;         // 0.01 etherium
         gameFinished = false;
         startTimestamp = block.timestamp;
-        dueDateTimestamp = _dueDateTimestamp;
+        matchDateTimestamp = _matchDateTimestamp;
         admin = msg.sender;
         gameDescription = _gameDescription;
         option1Name = _option1Name;
         option2Name = _option2Name;
+        option1LeagueName = _option1LeagueName;
+        option2LeagueName = _option2LeagueName;
         owner = payable(admin);
     }
 
@@ -165,7 +171,7 @@ contract Betting {
         )
     {
         bool isOpen = gameFinished == false;
-        bool timePassed = ((block.timestamp - dueDateTimestamp) > 0);
+        bool timePassed = ((block.timestamp - matchDateTimestamp) > 0);
         bool hasPlayers = players.length > 0;
         bool hasBalance = address(this).balance > 0;
         readyToExecute = (timePassed && isOpen && hasBalance && hasPlayers);
@@ -199,12 +205,12 @@ contract Betting {
         return admin;
     }
 
-    function reopenGame(string memory _gameDescription, string memory _option1Name, string memory _option2Name, uint256 _dueDateTimestamp) public onlyAdmin{
+    function reopenGame(string memory _gameDescription, string memory _option1Name, string memory _option2Name, uint256 _matchDateTimestamp) public onlyAdmin{
         gameFinished = false;
         gameDescription = _gameDescription;
         option1Name = _option1Name;
         option2Name = _option2Name;
-        dueDateTimestamp = _dueDateTimestamp;
+        matchDateTimestamp = _matchDateTimestamp;
         players = new address payable [](0);
         startTimestamp = block.timestamp;
     }
@@ -229,6 +235,10 @@ contract Betting {
        return option1Name;
     }
 
+    function getOption1LeagueName() public view returns(string memory){
+       return option1LeagueName;
+    }
+
     function AmountTwo() public view returns(uint256){
        return totalBetTwo;
     }
@@ -237,15 +247,19 @@ contract Betting {
        return option2Name;
     }
 
+    function getOption2LeagueName() public view returns(string memory){
+       return option2LeagueName;
+    }
+
     function getNumberOfPlayers() public view returns (uint256) {
         return players.length;
     }
 
-    function getDueDateTimestamp() public view returns (uint256) {
-        return dueDateTimestamp;
+    function getMatchDateTimestamp() public view returns (uint256) {
+        return matchDateTimestamp;
     }
 
-    function getStartTimeStamp() public view returns (uint256) {
+    function getStartTimestamp() public view returns (uint256) {
         return startTimestamp;
     }
 
