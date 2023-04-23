@@ -17,15 +17,17 @@ error Betting__BettingNotOpen();
 contract Betting {
 
     // Betting Variables
-    uint256 private immutable i_interval;
     uint256 private minimumBet;
     uint256 private totalBetOne;
     uint256 private totalBetTwo;
-    uint256 private s_lastTimeStamp;
+    uint256 private startTimestamp;
+    uint256 private dueDateTimestamp;
 
     address payable public owner;
     address private admin;
     bool public gameFinished;
+
+    string public gameDescription;
 
     string public option1Name;
     string public option2Name;
@@ -46,16 +48,18 @@ contract Betting {
 
     /* Functions */
     constructor(
+      string memory _gameDescription,
       string memory _option1Name,
       string memory _option2Name,
-      uint256 interval,
+      uint256 _dueDateTimestamp,
       uint256 entranceFee
     ) {
-        i_interval = interval;
         minimumBet = entranceFee;         // 0.01 etherium
         gameFinished = false;
-        s_lastTimeStamp = block.timestamp;
+        startTimestamp = block.timestamp;
+        dueDateTimestamp = _dueDateTimestamp;
         admin = msg.sender;
+        gameDescription = _gameDescription;
         option1Name = _option1Name;
         option2Name = _option2Name;
         owner = payable(admin);
@@ -112,7 +116,7 @@ contract Betting {
             }
         }
         //We define which bet sum is the Loser one and which one is the winner
-        if ( teamWinner == 1){
+        if (teamWinner == 1){
             LoserBet = totalBetTwo;
             WinnerBet = totalBetOne;
         }
@@ -161,7 +165,7 @@ contract Betting {
         )
     {
         bool isOpen = gameFinished == false;
-        bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
+        bool timePassed = ((block.timestamp - dueDateTimestamp) > 0);
         bool hasPlayers = players.length > 0;
         bool hasBalance = address(this).balance > 0;
         readyToExecute = (timePassed && isOpen && hasBalance && hasPlayers);
@@ -195,12 +199,14 @@ contract Betting {
         return admin;
     }
 
-    function reopenGame(string memory _option1Name, string memory _option2Name) public onlyAdmin{
+    function reopenGame(string memory _gameDescription, string memory _option1Name, string memory _option2Name, uint256 _dueDateTimestamp) public onlyAdmin{
         gameFinished = false;
+        gameDescription = _gameDescription;
         option1Name = _option1Name;
         option2Name = _option2Name;
+        dueDateTimestamp = _dueDateTimestamp;
         players = new address payable [](0);
-        s_lastTimeStamp = block.timestamp;
+        startTimestamp = block.timestamp;
     }
 
     function getGameFinished() public view returns (bool) {
@@ -235,16 +241,16 @@ contract Betting {
         return players.length;
     }
 
-    function getDueDate() public view returns (uint256) {
-        return s_lastTimeStamp;
+    function getDueDateTimestamp() public view returns (uint256) {
+        return dueDateTimestamp;
     }
 
-    function getPlayer(uint256 index) public view returns (address) {
+    function getStartTimeStamp() public view returns (uint256) {
+        return startTimestamp;
+    }
+
+    function getPlayerInfo(uint256 index) public view returns (address) {
         return players[index];
-    }
-
-    function getLastTimeStamp() public view returns (uint256) {
-        return s_lastTimeStamp;
     }
 
     function getEntranceFee() public view returns (uint256) {

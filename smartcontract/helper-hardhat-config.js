@@ -9,7 +9,8 @@ const networkConfig = {
         name: "localhost",
         subscriptionId: "588",
         gasLane: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", // 30 gwei
-        keepersUpdateInterval: "30",
+        dueDateTimestamp: "1682251200",   // Sun Apr 23 2023 12:00:00 GMT+0000
+        gameDescription: "Bet the winner Group Stage A, MSI 2023, 2023-05-27",
         option1Name: "SKT",
         option2Name: "KT",
         lottoEntranceFee: ethers.utils.parseEther("0.01"), // 0.01 ETH
@@ -19,7 +20,8 @@ const networkConfig = {
         name: "sepolia",
         subscriptionId: "719",
         gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c", // 30 gwei
-        keepersUpdateInterval: "30",
+        dueDateTimestamp: "1682251200",   // Sun Apr 23 2023 12:00:00 GMT+0000
+        gameDescription: "Bet the winner Group Stage A, MSI 2023, 2023-05-27",
         option1Name: "SKT",
         option2Name: "KT",
         lottoEntranceFee: ethers.utils.parseEther("0.01"), // 0.01 ETH
@@ -30,7 +32,8 @@ const networkConfig = {
         name: "goerli",
         subscriptionId: "9237",
         gasLane: "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15", // 150 gwei
-        keepersUpdateInterval: "30",
+        dueDateTimestamp: "1682251200",   // Sun Apr 23 2023 12:00:00 GMT+0000
+        gameDescription: "Bet the winner Group Stage A, MSI 2023, 2023-05-27",
         option1Name: "SKT",
         option2Name: "KT",
         lottoEntranceFee: ethers.utils.parseEther("0.01"), // 0.01 ETH

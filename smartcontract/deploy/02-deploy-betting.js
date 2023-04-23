@@ -20,9 +20,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     log("----------------------------------------------------")
     const arguments = [
+        networkConfig[chainId]["gameDescription"],
         networkConfig[chainId]["option1Name"],
         networkConfig[chainId]["option2Name"],
-        networkConfig[chainId]["keepersUpdateInterval"],
+        networkConfig[chainId]["dueDateTimestamp"],
         networkConfig[chainId]["lottoEntranceFee"],
     ]
     const betting = await deploy("Betting", {
