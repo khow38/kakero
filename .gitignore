@@ -3,3 +3,4 @@
 *.log
 tmp/
 smartcontract/.env
+smartcontract/.env*.bk

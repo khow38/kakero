@@ -43,7 +43,7 @@ contract Betting {
     address payable[] public players;
     address payable[] private winners;
 
-    uint private commission = 10;
+    uint private commission = 5;
 
     /* Events */
     event BettingEnter(address indexed player);
@@ -271,13 +271,13 @@ contract Betting {
         return minimumBet;
     }
 
+    function getCommissionRatio() public view returns (uint256) {
+        return commission;
+    }
+
     modifier onlyAdmin {
         require(msg.sender == admin, "Only admin can call this function");
         _;
     }
 
-    modifier onlyOwner {
-        require(msg.sender == owner, "Only owner can call this function");
-        _;
-    }
 }

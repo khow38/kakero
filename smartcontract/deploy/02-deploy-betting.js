@@ -23,6 +23,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         networkConfig[chainId]["gameDescription"],
         networkConfig[chainId]["option1Name"],
         networkConfig[chainId]["option2Name"],
+        networkConfig[chainId]["option1LeagueName"],
+        networkConfig[chainId]["option2LeagueName"],
         networkConfig[chainId]["matchDateTimestamp"],
         networkConfig[chainId]["lottoEntranceFee"],
     ]
