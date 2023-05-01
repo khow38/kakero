@@ -23,16 +23,16 @@ contract Betting {
     uint256 private startTimestamp;
     uint256 private matchDateTimestamp;
 
-    address payable public owner;
+    address payable private owner;
     address private admin;
     bool public gameFinished;
 
     string public gameDescription;
 
-    string public option1Name;
-    string public option2Name;
-    string public option1LeagueName;
-    string public option2LeagueName;
+    string private option1Name;
+    string private option2Name;
+    string private option1LeagueName;
+    string private option2LeagueName;
 
     struct Player {
         uint256 amountBet;
