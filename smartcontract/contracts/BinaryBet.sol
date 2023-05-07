@@ -205,11 +205,18 @@ contract Betting {
         return admin;
     }
 
-    function reopenGame(string memory _gameDescription, string memory _option1Name, string memory _option2Name, uint256 _matchDateTimestamp) public onlyAdmin{
+    function reopenGame( string memory _gameDescription
+                       , string memory _option1Name
+                       , string memory _option1LeagueName
+                       , string memory _option2Name
+                       , string memory _option2LeagueName
+                       , uint256 _matchDateTimestamp) public onlyAdmin{
         gameFinished = false;
         gameDescription = _gameDescription;
         option1Name = _option1Name;
+        option1LeagueName = _option1LeagueName;
         option2Name = _option2Name;
+        option2LeagueName = _option2LeagueName;
         matchDateTimestamp = _matchDateTimestamp;
         players = new address payable [](0);
         startTimestamp = block.timestamp;
