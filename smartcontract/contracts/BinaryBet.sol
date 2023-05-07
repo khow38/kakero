@@ -2,9 +2,6 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "hardhat/console.sol";
-
 /* Errors */
 error Betting__ExecuteNotNeeded(uint256 currentBalance, uint256 numPlayers, bool gameFinished);
 error Betting__TransferFailed();
