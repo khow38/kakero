@@ -22,7 +22,7 @@ contract Betting {
 
     address payable private owner;
     address private admin;
-    bool public gameFinished;
+    bool private gameFinished;
 
     string public gameDescription;
 
