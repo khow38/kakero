@@ -22,12 +22,12 @@ const networkConfig = {
         name: "sepolia",
         subscriptionId: "719",
         gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c", // 30 gwei
-        matchDateTimestamp: "1683810000",
-        gameDescription: "Bet the winner of Bracket Stage, MSI 2023, May 11, 2023 1:00:00 PM GMT",
-        option1Name: "CLOUD9",
-        option1LeagueName: "LCS",
-        option2Name: "BGP",
-        option2LeagueName: "LPL",
+        matchDateTimestamp: "1683896400",
+        gameDescription: "Bet the winner of Bracket Stage, MSI 2023, May 12, 2023 1:00:00 PM GMT",
+        option1Name: "JDG",
+        option1LeagueName: "LPL",
+        option2Name: "GG",
+        option2LeagueName: "LCS",
         lottoEntranceFee: ethers.utils.parseEther("0.001"), // 0.001 ETH
         callbackGasLimit: "500000", // 500,000 gas
         vrfCoordinatorV2: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625"
