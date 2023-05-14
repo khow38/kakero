@@ -106,7 +106,7 @@ contract Betting {
         players.push(payable(msg.sender));
 
         //at the end, we increment the stakes of the team selected with the player bet
-        totalBetOne += betValue;
+        totalBetTwo += betValue;
         emit BettingEnter(msg.sender);
     }
 
@@ -179,7 +179,8 @@ contract Betting {
      */
     function performExecute(
         uint16 oraclemsg
-    ) external onlyAdmin{
+    ) external onlyAdmin onlyAfterMatchDate
+    {
         (bool readyToExecute, ) = checkExecuteReady();
         // require(upkeepNeeded, "Upkeep not needed");
         if (!readyToExecute) {
@@ -196,7 +197,8 @@ contract Betting {
 
     /** Getter Functions */
 
-    function getAdmin() public view returns (address) {
+    function getAdmin() public view returns (address)
+    {
         return admin;
     }
 
@@ -205,7 +207,9 @@ contract Betting {
                        , string memory _option1LeagueName
                        , string memory _option2Name
                        , string memory _option2LeagueName
-                       , uint256 _matchDateTimestamp) public onlyAdmin{
+                       , uint256 _matchDateTimestamp)
+                       public onlyAdmin onlyGameFinished
+    {
 
         // Delete all the players
         for (uint256 i = 0; i < players.length; i++){
@@ -287,8 +291,18 @@ contract Betting {
         return commission;
     }
 
+    modifier onlyGameFinished() {
+        require(gameFinished, "The unfinished game remained");
+        _;
+    }
+
     modifier onlyBeforeMatchDate() {
         require(block.timestamp < matchDateTimestamp, "The deadline has passed");
+        _;
+    }
+
+    modifier onlyAfterMatchDate() {
+        require(block.timestamp > matchDateTimestamp, "The deadline has not yet passed");
         _;
     }
 

@@ -22,12 +22,12 @@ const networkConfig = {
         name: "sepolia",
         subscriptionId: "719",
         gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c", // 30 gwei
-        matchDateTimestamp: "1684048200",
-        gameDescription: "Next President of USA, MSI 2023, May 12, 2023 1:00:00 PM GMT",
-        option1Name: "Biden",
-        option1LeagueName: "Democratic",
-        option2Name: "Trump",
-        option2LeagueName: "Republic",
+        matchDateTimestamp: "1684062000",
+        gameDescription: "Bet the winner, MSI 2023, May 14, 2023 11:00:00 AM",
+        option1Name: "BLG",
+        option1LeagueName: "LPL",
+        option2Name: "JDG",
+        option2LeagueName: "LPL",
         lottoEntranceFee: ethers.utils.parseEther("0.001"), // 0.001 ETH
         callbackGasLimit: "500000", // 500,000 gas
         vrfCoordinatorV2: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625"
