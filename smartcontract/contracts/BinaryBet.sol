@@ -24,7 +24,7 @@ contract Betting {
     address private admin;
     bool private gameFinished;
 
-    string public gameDescription;
+    string private gameDescription;
 
     string private option1Name;
     string private option2Name;
@@ -36,8 +36,8 @@ contract Betting {
         uint16 teamSelected;
     }
     // Address of the player and => the user info
-    mapping(address => Player) public playerInfo;
-    address payable[] public players;
+    mapping(address => Player) private playerInfo;
+    address payable[] private players;
     address payable[] private winners;
 
     uint private commission = 5;
@@ -138,17 +138,6 @@ contract Betting {
         owner.transfer(address(this).balance);
 
         gameFinished = true;
-        // Delete all the players
-        for (uint256 i = 0; i < players.length; i++){
-            delete playerInfo[players[i]];
-        }
-        delete players; // Delete all the players array
-        delete winners; // Delete all the winners array
-        // players.length = 0; // Delete all the players array
-        LoserBet = 0; //reinitialize the bets
-        WinnerBet = 0;
-        totalBetOne = 0;
-        totalBetTwo = 0;
     }
 
     /**
@@ -195,7 +184,6 @@ contract Betting {
         distributePrizes(oraclemsg);
     }
 
-
     /** Getter Functions */
 
     function getAdmin() public view returns (address) {
@@ -208,6 +196,18 @@ contract Betting {
                        , string memory _option2Name
                        , string memory _option2LeagueName
                        , uint256 _matchDateTimestamp) public onlyAdmin{
+        // Delete all the players
+        for (uint256 i = 0; i < players.length; i++){
+            delete playerInfo[players[i]];
+        }
+        delete players; // Delete all the players array
+        delete winners; // Delete all the winners array
+        // players.length = 0; // Delete all the players array
+        LoserBet = 0; //reinitialize the bets
+        WinnerBet = 0;
+        totalBetOne = 0;
+        totalBetTwo = 0;
+
         gameFinished = false;
         gameDescription = _gameDescription;
         option1Name = _option1Name;
