@@ -22,8 +22,8 @@ const networkConfig = {
         name: "sepolia",
         subscriptionId: "719",
         gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c", // 30 gwei
-        matchDateTimestamp: "1684062000",
-        gameDescription: "Bet the winner, MSI 2023, May 14, 2023 11:00:00 AM",
+        matchDateTimestamp: "1684066800",
+        gameDescription: "Bet the winner, MSI 2023, May 14, 2023 13:20:00 AM",
         option1Name: "BLG",
         option1LeagueName: "LPL",
         option2Name: "JDG",

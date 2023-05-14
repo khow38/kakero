@@ -160,17 +160,14 @@ contract Betting {
     function checkExecuteReady()
         public
         view
-        returns (
-            bool readyToExecute,
-            bytes memory /* performData */
-        )
+        returns (bool readyToExecute)
     {
         bool isOpen = gameFinished == false;
         bool timePassed = ((block.timestamp - matchDateTimestamp) > 0);
         bool hasPlayers = players.length > 0;
         bool hasBalance = address(this).balance > 0;
         readyToExecute = (timePassed && isOpen && hasBalance && hasPlayers);
-        return (readyToExecute, "0x0"); // can we comment this out?
+        return readyToExecute;
     }
 
     /**
@@ -181,7 +178,7 @@ contract Betting {
         uint16 oraclemsg
     ) external onlyAdmin onlyAfterMatchDate
     {
-        (bool readyToExecute, ) = checkExecuteReady();
+        bool readyToExecute = checkExecuteReady();
         // require(upkeepNeeded, "Upkeep not needed");
         if (!readyToExecute) {
             revert Betting__ExecuteNotNeeded(
@@ -196,7 +193,6 @@ contract Betting {
 
 
     /** Getter Functions */
-
     function getAdmin() public view returns (address)
     {
         return admin;

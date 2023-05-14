@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/khow/kakero/smartcontract/contracts/BinaryBet.sol": {
-      "lastModificationDate": 1684055661573,
-      "contentHash": "32a69b491c320ee9df0c8452942ec08e",
+      "lastModificationDate": 1684058924236,
+      "contentHash": "b965c6c1bf75ff11e5138debb491f143",
       "sourceName": "contracts/BinaryBet.sol",
       "solcConfig": {
         "version": "0.8.17",
